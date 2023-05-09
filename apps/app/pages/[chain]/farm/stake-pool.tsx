@@ -1,11 +1,19 @@
 import ClaimReward from '@/components/BasePool/ClaimReward'
 import BasePoolList from '@/components/BasePool/List'
-import CreateBasePoolButton from '@/components/CreateBasePoolButton'
+import FarmChart from '@/components/FarmChart'
 import PageHeader from '@/components/PageHeader'
 import Property from '@/components/Property'
 import {useClaimableStakePoolsQuery} from '@/lib/subsquidQuery'
 import {subsquidClientAtom} from '@/store/common'
-import {Box, Button, Dialog, Skeleton, Stack} from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  Paper,
+  Skeleton,
+  Stack,
+  Typography,
+} from '@mui/material'
 import {polkadotAccountAtom} from '@phala/store'
 import {toCurrency} from '@phala/util'
 import Decimal from 'decimal.js'
@@ -46,35 +54,60 @@ const MyStakePools: FC = () => {
     <>
       <PageHeader title="My StakePools" />
       <Stack
-        direction="row"
-        alignContent="center"
-        justifyContent="space-between"
+        direction={{xs: 'column', md: 'row'}}
+        spacing={2}
+        alignItems="flex-end"
       >
-        <Stack spacing={2} direction="row" alignItems="center">
-          <Property
-            label="Owner Rewards"
-            wikiEntry="stakePoolOwnerRewards"
-            size="large"
-          >
-            {ownerReward != null ? (
-              `${toCurrency(ownerReward)} PHA`
-            ) : (
-              <Skeleton width={100} />
-            )}
-          </Property>
+        <Paper
+          sx={{
+            background: 'transparent',
+            flex: {xs: 0, md: 1},
+          }}
+        >
+          <Stack m={2}>
+            <Stack
+              flex={1}
+              spacing={2}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Property
+                label="Owner Rewards"
+                wikiEntry="stakePoolOwnerRewards"
+                size="large"
+              >
+                {ownerReward != null ? (
+                  `${toCurrency(ownerReward)} PHA`
+                ) : (
+                  <Skeleton width={100} />
+                )}
+              </Property>
 
-          <Button
-            size="small"
-            disabled={ownerReward == null || ownerReward.eq(0)}
-            onClick={() => {
-              setDialogOpen(true)
-            }}
-          >
-            Claim All
-          </Button>
-        </Stack>
-        <CreateBasePoolButton kind="StakePool" />
+              <Button
+                variant="contained"
+                disabled={ownerReward == null || ownerReward.eq(0)}
+                onClick={() => {
+                  setDialogOpen(true)
+                }}
+              >
+                Claim All
+              </Button>
+            </Stack>
+          </Stack>
+        </Paper>
+        <Paper sx={{background: 'transparent', flex: {xs: 0, md: 1}}}>
+          <Typography variant="h6" lineHeight={1} m={2}>
+            Daily Owner Rewards
+          </Typography>
+          <Box height={140}>
+            {account != null && (
+              <FarmChart account={account.address} kind="StakePool" />
+            )}
+          </Box>
+        </Paper>
       </Stack>
+
       <Box mt={3}>
         <BasePoolList kind="StakePool" variant="farm" />
       </Box>

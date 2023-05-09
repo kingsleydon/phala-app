@@ -1,15 +1,24 @@
 import ClaimDelegation from '@/components/BasePool/ClaimDelegation'
 import BasePoolList from '@/components/BasePool/List'
-import CreateBasePoolButton from '@/components/CreateBasePoolButton'
+import FarmChart from '@/components/FarmChart'
 import PageHeader from '@/components/PageHeader'
 import PromiseButton from '@/components/PromiseButton'
-import WikiButton from '@/components/Wiki/Button'
+import Property from '@/components/Property'
 import usePolkadotApi from '@/hooks/usePolkadotApi'
 import useSignAndSend from '@/hooks/useSignAndSend'
 import getVaultOwnerCut from '@/lib/getVaultOwnerCut'
 import {useOwnedVaultsQuery} from '@/lib/subsquidQuery'
 import {subsquidClientAtom} from '@/store/common'
-import {Box, Button, Dialog, Skeleton, Stack, Typography} from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  Divider,
+  Paper,
+  Skeleton,
+  Stack,
+  Typography,
+} from '@mui/material'
 import {polkadotAccountAtom} from '@phala/store'
 import {toCurrency} from '@phala/util'
 import Decimal from 'decimal.js'
@@ -86,63 +95,81 @@ const MyVaults: FC = () => {
   return (
     <>
       <PageHeader title="My Vaults" />
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="flex-end"
-        justifyContent="space-between"
-      >
-        <Stack spacing={0.5}>
-          <Stack spacing={2} direction="row" alignItems="center">
-            <WikiButton entry="ownerCut">
-              <Typography variant="h6" component="h2" color="text.secondary">
-                Owner Cut
-              </Typography>
-            </WikiButton>
-            <Typography variant="num3">
-              {!isLoading ? (
-                `${toCurrency(ownerCut)} PHA`
-              ) : (
-                <Skeleton width={100} />
-              )}
-            </Typography>
-            <PromiseButton
-              color="secondary"
-              size="small"
-              onClick={mintAll}
-              disabled={vaultsWithOwnerCut.length === 0}
+      <Stack direction={{xs: 'column', md: 'row'}} spacing={2}>
+        <Paper
+          sx={{
+            background: 'transparent',
+            flex: {xs: 0, md: 1},
+          }}
+        >
+          <Stack spacing={2} m={2} divider={<Divider flexItem />}>
+            <Stack
+              spacing={2}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              flex={1}
             >
-              Mint Cut
-            </PromiseButton>
-          </Stack>
+              <Property size="large" label="Owner Cut" wikiEntry="ownerCut">
+                {!isLoading ? (
+                  `${toCurrency(ownerCut)} PHA`
+                ) : (
+                  <Skeleton width={100} />
+                )}
+              </Property>
 
-          <Stack spacing={2} direction="row" alignItems="center">
-            <WikiButton entry="vaultOwnerRewards">
-              <Typography variant="h6" component="h2" color="text.secondary">
-                Owner Rewards
-              </Typography>
-            </WikiButton>
-            <Typography variant="num3">
-              {!isLoading ? (
-                `${toCurrency(ownerRewards)} PHA`
-              ) : (
-                <Skeleton width={100} />
-              )}
-            </Typography>
-            <Button
-              color="secondary"
-              size="small"
-              disabled={vaultsWithOwnerRewards.length === 0}
-              onClick={() => {
-                setDialogOpen(true)
-              }}
+              <PromiseButton
+                color="secondary"
+                variant="contained"
+                onClick={mintAll}
+                disabled={vaultsWithOwnerCut.length === 0}
+              >
+                Mint Cut
+              </PromiseButton>
+            </Stack>
+
+            <Stack
+              spacing={2}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              flex={1}
             >
-              Claim to Delegation
-            </Button>
-          </Stack>
-        </Stack>
+              <Property
+                size="large"
+                label="Owner Rewards"
+                wikiEntry="vaultOwnerRewards"
+              >
+                {!isLoading ? (
+                  `${toCurrency(ownerRewards)} PHA`
+                ) : (
+                  <Skeleton width={100} />
+                )}
+              </Property>
 
-        <CreateBasePoolButton kind="Vault" />
+              <Button
+                color="secondary"
+                variant="contained"
+                disabled={vaultsWithOwnerRewards.length === 0}
+                onClick={() => {
+                  setDialogOpen(true)
+                }}
+              >
+                Claim to Delegation
+              </Button>
+            </Stack>
+          </Stack>
+        </Paper>
+        <Paper sx={{background: 'transparent', flex: {xs: 0, md: 1}}}>
+          <Typography variant="h6" lineHeight={1} m={2}>
+            Daily Owner Rewards
+          </Typography>
+          <Box height={140}>
+            {account != null && (
+              <FarmChart account={account.address} kind="Vault" />
+            )}
+          </Box>
+        </Paper>
       </Stack>
       <Box mt={3}>
         <BasePoolList kind="Vault" variant="farm" />
