@@ -53,18 +53,14 @@ const MyStakePools: FC = () => {
   return (
     <>
       <PageHeader title="My StakePools" />
-      <Stack
-        direction={{xs: 'column', md: 'row'}}
-        spacing={2}
-        alignItems="flex-end"
-      >
+      <Stack direction={{xs: 'column', md: 'row'}} spacing={2}>
         <Paper
           sx={{
             background: 'transparent',
             flex: {xs: 0, md: 1},
           }}
         >
-          <Stack m={2}>
+          <Stack mx={2} justifyContent="center">
             <Stack
               flex={1}
               spacing={2}
